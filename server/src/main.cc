@@ -1,17 +1,20 @@
-/*************************************************************************
-	> File Name: main.c
-	> Author: Name
-	> Mail: Name@163.com 
-	> Created Time: 2021-02-04 16:06:27
- ************************************************************************/
-
 #include "../include/head.h"
 #include "../include/threadpool.h"
 
+int fds[2];
+void exitFun(int signum)
+{
+    char exitFlag=1;
+    write(fds[1],&exitFlag,sizeof(exitFlag));
+    printf("signal %d is comming\n",signum);
+}
 // ip，port,threadnum
 int main(int argc,char* argv[])
 {
     ARGS_CHECK(argc,4);
+
+    pipe(fds);
+    signal(SIGUSR1,exitFun);
 
     int threadnum = atoi(argv[3]);
     threadpool_t threadPool;
@@ -31,6 +34,7 @@ int main(int argc,char* argv[])
     int epfd=epoll_create(1);
     ERROR_CHECK(epfd,-1,"epoll_create");
     epollAdd(epfd,listenFd);
+    epollAdd(epfd,fds[0]);
     int readyNum=0;
     struct epoll_event evs[2];
     memset(evs,0,sizeof(evs));
@@ -51,8 +55,19 @@ int main(int argc,char* argv[])
                 pthread_mutex_unlock(&threadPool.que.mlock);
                 pthread_cond_signal(&threadPool.que.cond);
             }
+            else
+            {
+                threadPool.startFlag=0;
+                for(int j=0;j<threadPool.threadnum;j++)
+                {
+                    pthread_cond_signal(&threadPool.que.cond);
+                    pthread_join(threadPool.pThid[j],NULL);
+                }
+                printf("main thread exit\n");
+                close(listenFd);
+                exit(0);
+            }
         }
     }
-    close(listenFd);
     return 0;
 }

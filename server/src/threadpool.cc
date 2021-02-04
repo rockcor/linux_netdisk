@@ -1,17 +1,32 @@
 #include "../include/threadpool.h"
 
+void clean(void* pArg)
+{
+    pthread_mutex_unlock((pthread_mutex_t*)pArg);
+}
 void* threadFunc(void* pArg)
 {
     pThreadpool_t pPool =(pThreadpool_t)pArg;
     pQue_t pQue=&pPool->que;
+    pthread_cleanup_push(clean,&pQue->mlock);
     pNode_t pCur=NULL;
     while(1)
     {
+        if(0==pPool->startFlag)
+        {
+            printf("child exit\n");
+            pthread_exit(0);
+        }
         pthread_mutex_lock(&pQue->mlock);
         if(0==pQue->size)
         {
             printf("child wait\n");
             pthread_cond_wait(&pQue->cond,&pQue->mlock);
+            if(0==pPool->startFlag)
+            {
+                printf("child exit\n");
+                pthread_exit(0);
+            }
             printf("child wake up\n");
         }
         int suc=queGet(pQue,&pCur);
@@ -22,6 +37,7 @@ void* threadFunc(void* pArg)
             close(pCur->clientFd);
         }
     }
+    pthread_cleanup_pop(1);
 }
 
 int threadPoolInit(pThreadpool_t pPool,int threadnum)
