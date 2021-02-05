@@ -22,12 +22,6 @@ void* threadFunc(void* pArg)
         {
             printf("child wait\n");
             pthread_cond_wait(&pQue->cond,&pQue->mlock);
-            if(0==pPool->startFlag)
-            {
-                printf("child exit\n");
-                pthread_exit(0);
-            }
-            printf("child wake up\n");
         }
         int suc=queGet(pQue,&pCur);
         pthread_mutex_unlock(&pQue->mlock);
