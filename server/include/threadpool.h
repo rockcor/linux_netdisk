@@ -1,17 +1,8 @@
-/*************************************************************************
-	> File Name: threadpool.h
-	> Author: Name
-	> Mail: Name@163.com 
-	> Created Time: 2021-02-04 15:12:38
- ************************************************************************/
-
-#ifndef __THREADPOOL_H__
-#define __THREADPOOL_H__
+#pragma once
 #include "head.h"
 #include "workque.h"
 
 //定义线程池结构体
-//
 
 typedef struct{
     que_t que;
@@ -32,4 +23,3 @@ int tcpInit(int* socketFd,char* ip,char* port);
 int epollAdd(int epfd,int fd);
 int transFile(int clientFd);
 
-#endif

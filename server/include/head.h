@@ -1,7 +1,4 @@
-//包含的是通用库的头文件
-
-#ifndef __HEAD_H__
-#define __HEAD_H__
+#pragma once
 
 #define _GUN_SOURCE
 #include <stdio.h>
@@ -43,4 +40,3 @@
 #define THREAD_ERROR_CHECK(ret,funcName)  do{  if(0 != ret) {  printf("%s : %s \n",funcName,strerror(ret));    }   }while(0)
 #define CHILD_THREAD_ERROR_CHECK(ret,funcName)  do{  if(0 != ret) {  printf("%s : %s \n",funcName,strerror(ret)); return (void*)-1;   }   }while(0)
 
-#endif

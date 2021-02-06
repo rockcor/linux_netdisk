@@ -1,13 +1,5 @@
-/*************************************************************************
-	> File Name: workque.h
-	> Author: Name
-	> Mail: Name@163.com 
-	> Created Time: 2021-02-04 15:07:41
- ************************************************************************/
 
-#ifndef __WORKQUE_H__
-#define __WORKQUE_H__
-
+#pragma once
 #include "head.h"
 
 //队列的任务节点，记录客户端的套接字描述符
@@ -27,4 +19,3 @@ int queInit(pQue_t pQue);
 int queInsert(pQue_t pQue,pNode_t pNew);
 int queGet(pQue_t pQue,pNode_t* pGet);
 
-#endif
